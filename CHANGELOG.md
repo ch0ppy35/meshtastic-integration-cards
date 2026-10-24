@@ -8,6 +8,13 @@
   When enabled, sends to the configured channel via the integration's
   `meshtastic.broadcast_channel_message` service.
 
+🐛 Bug fixes:
+
+- Sent messages no longer appear twice or as `Unknown: «msg» to <channel>`
+  after a reload. The card now relies on the integration's outbound
+  `meshtastic_message_log` event and logbook entries, shows them as **You**,
+  and no longer adds a local in-memory echo.
+
 💥 Breaking changes:
 
 - Removed the `show_pki_badge` config option. The 🔒 badge is now always

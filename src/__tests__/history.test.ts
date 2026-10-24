@@ -125,6 +125,35 @@ describe('loadHistory', () => {
     warn.mockRestore();
   });
 
+  it('parses outbound «message» to recipient entries as sent by "You"', async () => {
+    const hass = makeHass([
+      {
+        when: 1,
+        message: '«Test123» to Channel BeanChop',
+        entity_id: 'meshtastic.ch',
+        domain: 'meshtastic',
+        icon: 'mdi:message-arrow-right',
+      },
+    ]);
+    const msgs = await loadHistory(hass, 'meshtastic.ch');
+    expect(msgs).toHaveLength(1);
+    expect(msgs[0]).toMatchObject({ message: 'Test123', fromName: 'You', pki: false, source: 'history' });
+  });
+
+  it('keeps " to " in an outbound message body and marks outbound PKI entries', async () => {
+    const hass = makeHass([
+      {
+        when: 1,
+        message: '«talk to me» to ChopMesh2 (!1234abcd)',
+        entity_id: 'meshtastic.ch',
+        domain: 'meshtastic',
+        icon: 'mdi:message-lock',
+      },
+    ]);
+    const msgs = await loadHistory(hass, 'meshtastic.ch');
+    expect(msgs[0]).toMatchObject({ message: 'talk to me', fromName: 'You', pki: true });
+  });
+
   it('uses context_id as the message id when provided', async () => {
     const hass = makeHass([{ when: 1, message: '«x» by y', entity_id: 'meshtastic.ch', context_id: 'ctx-123' }]);
     const msgs = await loadHistory(hass, 'meshtastic.ch');

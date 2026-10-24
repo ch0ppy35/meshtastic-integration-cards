@@ -16,6 +16,8 @@ export interface ChatCardConfig {
 }
 
 export const DEFAULT_LIMIT = 200;
+// Sender label for messages sent from Home Assistant through this gateway.
+export const OUTBOUND_SENDER = 'You';
 export const DEFAULT_HISTORY_DAYS = 7;
 
 // ---------------------------------------------------------------------------
@@ -46,6 +48,9 @@ export interface MeshtasticMessageLogData {
   from_name: string;
   message: string;
   pki?: boolean;
+  // `out` for messages sent from Home Assistant; absent/`in` for received ones.
+  direction?: 'in' | 'out';
+  to_name?: string;
 }
 
 export interface MeshtasticMessageLogEvent {

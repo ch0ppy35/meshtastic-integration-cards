@@ -95,6 +95,28 @@ describe('subscribeMessageLog', () => {
     });
   });
 
+  it('labels outbound events as sent by "You" instead of the gateway node name', async () => {
+    const conn = makeConnection();
+    const hass = makeHass(conn);
+    const received: ChatMessage[] = [];
+    await subscribeMessageLog(hass, 'meshtastic.ch', (msg) => {
+      received.push(msg);
+    });
+
+    conn.emit({
+      event_type: 'meshtastic_message_log',
+      data: {
+        entity_id: 'meshtastic.ch',
+        from_name: 'ChopMesh1 (!756f9ad8)',
+        message: 'Test123',
+        direction: 'out',
+        to_name: 'Channel BeanChop',
+      },
+    });
+
+    expect(received[0]).toMatchObject({ fromName: 'You', message: 'Test123', source: 'live' });
+  });
+
   it('falls back to a synthetic id when context.id is missing', async () => {
     const conn = makeConnection();
     const hass = makeHass(conn);
