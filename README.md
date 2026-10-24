@@ -9,7 +9,7 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 ## Features
 
 - **History backfill** – on load, pulls up to 7 days of past messages from the HA logbook (`logbook/get_events`).
-- **Send messages** – optional opt-in composer that sends to the configured channel via the integration's `meshtastic.broadcast_channel_message` service. Your own sent messages are echoed locally in the card for instant feedback; see [docs/sent-message-echo.md](docs/sent-message-echo.md) for the trade-offs (the echo is in-memory only and does not persist across reloads).
+- **Send messages** – optional opt-in composer that sends to the configured channel via the integration's `meshtastic.broadcast_channel_message` service. Sent messages appear in the log as **You** once the integration reports them (it fires `meshtastic_message_log` with `direction: "out"` and writes a logbook entry), so they also persist across reloads and show on every dashboard.
 
 ## Installation
 
@@ -158,8 +158,8 @@ config options that matter most while developing:
   event so you can see the live-flash animation
 - A **Replay history** button that rebuilds the mock logbook
 
-Send a message with `enable_send` on and the harness echoes it back through
-the live event stream and logs the `callService` payload to the browser
+Send a message with `enable_send` on and the harness reports it back through
+the live event stream as an outbound message and logs the `callService` payload to the browser
 console — useful for verifying the full round-trip without a radio.
 
 The harness lives in `demo/` and uses the same dev tag

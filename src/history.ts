@@ -1,17 +1,21 @@
 import { type HomeAssistant } from './ha-types';
-import { DEFAULT_HISTORY_DAYS, type ChatMessage, type LogbookEntry } from './types';
+import { DEFAULT_HISTORY_DAYS, OUTBOUND_SENDER, type ChatMessage, type LogbookEntry } from './types';
 
 // Logbook describer in the meshtastic integration formats messages as:
-//   «<message>» by <from_name>
-// We split on the trailing " by " (last occurrence) so that messages
-// containing " by " survive the round-trip.
+//   «<message>» by <from_name>   (received)
+//   «<message>» to <to_name>     (sent from Home Assistant)
+// We split on the trailing " by " / " to " (last occurrence) so that messages
+// containing those words survive the round-trip.
 const BACKFILL_MESSAGE_RE = /^«([\s\S]*)»\s+by\s+([\s\S]+)$/;
+const BACKFILL_OUTBOUND_RE = /^«([\s\S]*)»\s+to\s+[\s\S]+$/;
 
 const parseLogbookMessage = (raw: string | undefined): { message: string; fromName: string } | null => {
   if (!raw) return null;
   const m = BACKFILL_MESSAGE_RE.exec(raw);
-  if (!m) return null;
-  return { message: m[1], fromName: m[2].trim() };
+  if (m) return { message: m[1], fromName: m[2].trim() };
+  const out = BACKFILL_OUTBOUND_RE.exec(raw);
+  if (out) return { message: out[1], fromName: OUTBOUND_SENDER };
+  return null;
 };
 
 const toIsoTime = (when: number | string | undefined): string => {

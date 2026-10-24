@@ -1,5 +1,10 @@
 import { type HomeAssistant } from './ha-types';
-import { MESHTASTIC_MESSAGE_LOG_EVENT, type ChatMessage, type MeshtasticMessageLogEvent } from './types';
+import {
+  MESHTASTIC_MESSAGE_LOG_EVENT,
+  OUTBOUND_SENDER,
+  type ChatMessage,
+  type MeshtasticMessageLogEvent,
+} from './types';
 
 export type Unsubscribe = () => void;
 
@@ -21,7 +26,9 @@ export const subscribeMessageLog = async (
     cb({
       id,
       time,
-      fromName: data.from_name,
+      // For outbound events `from_name` is our own gateway node; history can't
+      // know that name, so both paths label sent messages the same way.
+      fromName: data.direction === 'out' ? OUTBOUND_SENDER : data.from_name,
       message: data.message,
       pki: Boolean(data.pki),
       source: 'live',

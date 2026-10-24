@@ -310,18 +310,8 @@ export class MeshtasticChatCard extends LitElement {
         message: text,
         ack: true,
       });
-      // The upstream integration does not fire `meshtastic_message_log` or
-      // write a logbook entry for outbound messages (see docs/sent-message-echo.md
-      // and https://github.com/meshtastic/home-assistant/issues/59), so echo
-      // locally for instant feedback gone on reload.
-      this._appendMessage({
-        id: `sent-${String(Date.now())}-${Math.random().toString(36).slice(2, 8)}`,
-        time: new Date().toISOString(),
-        fromName: 'You',
-        message: text,
-        pki: false,
-        source: 'live',
-      });
+      // No local echo: the integration fires `meshtastic_message_log` for
+      // outbound messages, so the live subscription renders the sent row.
       this._draft = '';
     } catch (err) {
       this._sendError = err instanceof Error ? err.message : String(err);

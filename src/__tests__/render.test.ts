@@ -264,7 +264,7 @@ describe('MeshtasticChatCard render', () => {
     document.body.removeChild(el);
   });
 
-  it('appends an optimistic "You" row in the chat log after a successful send', async () => {
+  it("shows a sent message once, from the integration's outbound log event", async () => {
     const conn = makeConnection();
     const hass = makeHass(conn);
     (hass.callService as unknown as Mock).mockReturnValue(Promise.resolve());
@@ -294,6 +294,23 @@ describe('MeshtasticChatCard render', () => {
     await flush();
     await el.updateComplete;
 
+    // The card no longer echoes locally: nothing until the integration reports the send.
+    expect(el.shadowRoot?.querySelectorAll('.row').length).toBe(0);
+
+    conn.emit({
+      event_type: 'meshtastic_message_log',
+      data: {
+        entity_id: 'meshtastic.ch',
+        from_name: 'ChopMesh1 (!756f9ad8)',
+        message: 'optimistic hi',
+        direction: 'out',
+        to_name: 'My Channel',
+      },
+      time_fired: '2023-05-01T12:00:00.000Z',
+      context: { id: 'ctx-out', user_id: null, parent_id: null },
+    });
+    await el.updateComplete;
+
     const rows = el.shadowRoot?.querySelectorAll('.row') ?? [];
     expect(rows.length).toBe(1);
     expect(rows[0]?.textContent).toContain('You');
@@ -302,7 +319,7 @@ describe('MeshtasticChatCard render', () => {
     document.body.removeChild(el);
   });
 
-  it('does not append an optimistic row when the send fails', async () => {
+  it('does not append a row when the send fails', async () => {
     const conn = makeConnection();
     const hass = makeHass(conn);
     (hass.callService as unknown as Mock).mockImplementation(() => Promise.reject(new Error('boom')));
