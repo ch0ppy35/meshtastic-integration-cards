@@ -1,7 +1,7 @@
 {
   "name": "meshtastic-chat-card",
   "description": "Lovelace card that displays Meshtastic channel messages recorded by the meshtastic Home Assistant integration.",
-  "repository": "https://github.com/ch0ppy35/meshtastic-integration-chat-log-card",
+  "repository": "https://github.com/ch0ppy35/meshtastic-integration-cards",
   "author": "Mike Miller",
   "version": "1.2.0",
   "module": "meshtastic-chat-card.js",

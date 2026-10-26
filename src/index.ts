@@ -24,7 +24,7 @@ const DEV: boolean = typeof __MESHTASTIC_CARD_DEV__ !== 'undefined' ? __MESHTAST
 const cardId = 'meshtastic-chat-card';
 const cardName = 'Meshtastic Chat';
 const cardDescription = 'Display Meshtastic channel messages recorded by the meshtastic Home Assistant integration.';
-const cardUrl = 'https://github.com/ch0ppy35/meshtastic-integration-chat-log-card';
+const cardUrl = 'https://github.com/ch0ppy35/meshtastic-integration-cards';
 
 declare global {
   interface Window {

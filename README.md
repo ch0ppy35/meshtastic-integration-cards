@@ -23,13 +23,13 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
 1. Open HACS in your Home Assistant instance
 2. Click the menu icon in the top right and select "Custom repositories"
 3. Add this repository URL and select "Dashboard" as the category
-   - `https://github.com/ch0ppy35/meshtastic-integration-chat-log-card`
+   - `https://github.com/ch0ppy35/meshtastic-integration-cards`
 4. Click "Install"
 5. Reload your browser
 
 ### Manual Installation
 
-1. Download the `meshtastic-chat-card.js` file from the [latest release](https://github.com/ch0ppy35/meshtastic-integration-chat-log-card/releases).
+1. Download the `meshtastic-chat-card.js` file from the [latest release](https://github.com/ch0ppy35/meshtastic-integration-cards/releases).
 2. Copy it to your `www/community/meshtastic-chat-card/` folder.
 3. Add the following to your `configuration.yaml` (or add as a resource in the Dashboards menu):
 
