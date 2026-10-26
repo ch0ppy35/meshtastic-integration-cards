@@ -1,6 +1,6 @@
 # Meshtastic Cards
 
-Custom [Lovelace](https://www.home-assistant.io/dashboards/) cards for [Home Assistant](https://www.home-assistant.io/) that work with the [`meshtastic` integration](https://github.com/meshtastic/home-assistant). One install gives you:
+Custom [Lovelace](https://www.home-assistant.io/dashboards/) cards for [Home Assistant](https://www.home-assistant.io/) that work with the [`meshtastic` integration](https://github.com/ch0ppy35/meshtastic-home-assistant). One install gives you:
 
 - **Meshtastic Chat** (`custom:meshtastic-chat-card`): channel messages, with history, live updates and optional sending.
 - **Meshtastic Radio** (`custom:meshtastic-radio-card`): everything the integration knows about your gateway radio, including battery, airtime, LoRa config, mesh and traffic stats, sensors and position.
@@ -25,7 +25,7 @@ Both cards share the same look: a compact header, grouped rows, and a brief flas
 ### Prerequisites
 
 > [!WARNING]
-> Before using these cards, please ensure you have the [Meshtastic integration](https://github.com/meshtastic/home-assistant) installed in your Home Assistant instance, with at least one connected gateway. The chat card needs a channel entity (`device_class: channel`); the radio card needs the gateway entity (`device_class: gateway`).
+> Before using these cards, please ensure you have the [Meshtastic integration](https://github.com/ch0ppy35/meshtastic-home-assistant) installed in your Home Assistant instance, with at least one connected gateway. The chat card needs a channel entity (`device_class: channel`); the radio card needs the gateway entity (`device_class: gateway`).
 
 ### HACS (Recommended)
 
