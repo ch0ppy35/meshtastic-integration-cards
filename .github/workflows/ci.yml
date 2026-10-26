@@ -2,12 +2,12 @@ name: CI
 
 on:
   pull_request:
-    branches: ["*"]
+    branches: ['*']
   push:
-    branches: ["main"]
+    branches: ['main']
 
 env:
-  NODE_VERSION: "26.x"
+  NODE_VERSION: '26.x'
 
 jobs:
   lint:
