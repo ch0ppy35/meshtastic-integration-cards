@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Meshtastic Chat Card — demo</title>
+    <title>Meshtastic Cards — demo</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -99,6 +99,8 @@
       main {
         padding: 24px;
         display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
         align-items: flex-start;
         justify-content: center;
       }
@@ -110,6 +112,10 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         overflow: hidden;
         display: flex;
+      }
+      .card-host.radio {
+        width: 400px;
+        height: auto;
       }
       .card-host > * {
         flex: 1;
@@ -123,7 +129,7 @@
   </head>
   <body>
     <aside>
-      <h1>Meshtastic Chat Card · demo</h1>
+      <h1>Meshtastic Cards · demo</h1>
 
       <h2>Config</h2>
       <div class="row">
@@ -160,6 +166,20 @@
         <input id="opt-height" type="range" min="200" max="1000" step="10" value="520" />
       </div>
 
+      <h2>Radio card</h2>
+      <div class="row">
+        <label for="opt-radio-config">show_config</label>
+        <input id="opt-radio-config" type="checkbox" checked />
+      </div>
+      <div class="row">
+        <label for="opt-radio-connected">gateway connected</label>
+        <input id="opt-radio-connected" type="checkbox" checked />
+      </div>
+      <div class="actions">
+        <button id="btn-telemetry" type="button">Randomize telemetry</button>
+      </div>
+      <p class="hint">Randomize pushes new sensor states through hass; changed rows flash.</p>
+
       <h2>Live events</h2>
       <div class="row">
         <label for="opt-pki">pki</label>
@@ -179,6 +199,7 @@
     </aside>
     <main>
       <div id="card-host" class="card-host"></div>
+      <div id="radio-host" class="card-host radio"></div>
     </main>
 
     <script type="module" src="./dist/meshtastic-chat-card.js"></script>

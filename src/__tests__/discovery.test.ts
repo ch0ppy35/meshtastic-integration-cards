@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   listChannelStates,
+  listGatewayStates,
   pickDefaultChannelEntity,
+  pickDefaultGatewayEntity,
   resolveChannelName,
   resolveGatewayName,
   type ChannelState,
@@ -130,5 +132,27 @@ describe('resolveChannelName', () => {
   it('falls back to friendly_name then entity_id', () => {
     expect(resolveChannelName(makeChannel('meshtastic.a', { friendly_name: 'Whatever' }))).toBe('Whatever');
     expect(resolveChannelName(makeChannel('meshtastic.b'))).toBe('meshtastic.b');
+  });
+});
+
+describe('listGatewayStates / pickDefaultGatewayEntity', () => {
+  const gateway = (entity_id: string, device_class = 'gateway') => ({
+    entity_id,
+    state: 'Connected',
+    attributes: { device_class },
+  });
+
+  it('returns only meshtastic.* entities with device_class=gateway', () => {
+    const hass = makeHass({
+      'meshtastic.gateway_base': gateway('meshtastic.gateway_base'),
+      'meshtastic.base_channel_primary': gateway('meshtastic.base_channel_primary', 'channel'),
+      'sensor.gateway_like': gateway('sensor.gateway_like'),
+    });
+    expect(listGatewayStates(hass).map((s) => s.entity_id)).toEqual(['meshtastic.gateway_base']);
+    expect(pickDefaultGatewayEntity(hass)).toBe('meshtastic.gateway_base');
+  });
+
+  it('returns undefined when there is no gateway', () => {
+    expect(pickDefaultGatewayEntity(makeHass({}))).toBeUndefined();
   });
 });

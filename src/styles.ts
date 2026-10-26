@@ -1,8 +1,9 @@
 import { css } from 'lit';
 
-// Styles belonging to the card
+// Styles shared by every card in the bundle so they read as one family:
+// header bar, divider, row typography, hover tint and the live-flash.
 // https://lit.dev/docs/components/styles/
-export default css`
+export const sharedStyles = css`
   ha-card {
     display: flex;
     flex-direction: column;
@@ -14,6 +15,7 @@ export default css`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     padding: 8px 16px;
     border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
   }
@@ -29,6 +31,43 @@ export default css`
     align-items: center;
     gap: 8px;
   }
+  .empty,
+  .error {
+    color: var(--secondary-text-color);
+    padding: 12px 16px;
+    font-style: italic;
+  }
+  .error {
+    color: var(--error-color, #db4437);
+    font-style: normal;
+  }
+  .row {
+    display: grid;
+    column-gap: 8px;
+    align-items: baseline;
+    padding: 2px 4px;
+    border-radius: 6px;
+    line-height: 1.35;
+    font-size: 0.92rem;
+  }
+  .row:hover {
+    background: var(--secondary-background-color, rgba(0, 0, 0, 0.04));
+  }
+  .live-flash {
+    animation: flash 1.2s ease-out 1;
+  }
+  @keyframes flash {
+    from {
+      background: var(--primary-color, #03a9f4);
+      color: var(--text-primary-color, #fff);
+    }
+    to {
+      background: transparent;
+    }
+  }
+`;
+
+export const chatStyles = css`
   .header .sort-toggle {
     background: transparent;
     border: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
@@ -97,28 +136,8 @@ export default css`
     color: var(--error-color, #db4437);
     font-size: 0.8rem;
   }
-  .empty,
-  .error {
-    color: var(--secondary-text-color);
-    padding: 12px 16px;
-    font-style: italic;
-  }
-  .error {
-    color: var(--error-color, #db4437);
-    font-style: normal;
-  }
   .row {
-    display: grid;
     grid-template-columns: auto 1fr;
-    column-gap: 8px;
-    align-items: baseline;
-    padding: 2px 4px;
-    border-radius: 6px;
-    line-height: 1.35;
-    font-size: 0.92rem;
-  }
-  .row:hover {
-    background: var(--secondary-background-color, rgba(0, 0, 0, 0.04));
   }
   .row .time {
     font-variant-numeric: tabular-nums;
@@ -148,17 +167,5 @@ export default css`
   .row .pki {
     margin-left: 4px;
     font-size: 0.85em;
-  }
-  .row.live-flash {
-    animation: flash 1.2s ease-out 1;
-  }
-  @keyframes flash {
-    from {
-      background: var(--primary-color, #03a9f4);
-      color: var(--text-primary-color, #fff);
-    }
-    to {
-      background: transparent;
-    }
   }
 `;

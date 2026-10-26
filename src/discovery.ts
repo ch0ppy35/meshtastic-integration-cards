@@ -1,7 +1,7 @@
 import { type HassEntity } from 'home-assistant-js-websocket';
 
 import { type HomeAssistant } from './ha-types';
-import type { MeshtasticChannelStateAttrs } from './types';
+import type { MeshtasticChannelStateAttrs, MeshtasticGatewayStateAttrs } from './types';
 
 // A channel state entry as returned by hass.states. We only narrow the
 // attributes we care about.
@@ -67,4 +67,18 @@ export const pickDefaultChannelEntity = (hass: HomeAssistant): string | undefine
   // Prefer the primary channel if present.
   const primary = channels.find((c) => c.attributes.primary === true);
   return (primary ?? channels[0]).entity_id;
+};
+
+// All gateway entities exposed by the meshtastic integration (one per
+// connected radio).
+export const listGatewayStates = (hass: HomeAssistant): HassEntity[] => {
+  return Object.values(hass.states).filter((s) => {
+    const attrs = s.attributes as MeshtasticGatewayStateAttrs;
+    return attrs.device_class === 'gateway' && typeof s.entity_id === 'string' && s.entity_id.startsWith('meshtastic.');
+  });
+};
+
+// Pick a sensible default gateway entity for `getStubConfig`.
+export const pickDefaultGatewayEntity = (hass: HomeAssistant): string | undefined => {
+  return listGatewayStates(hass).at(0)?.entity_id;
 };

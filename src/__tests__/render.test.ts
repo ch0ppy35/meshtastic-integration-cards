@@ -61,6 +61,11 @@ describe('MeshtasticChatCard render', () => {
     expect(customElements.get('meshtastic-chat-card')).toBeDefined();
   });
 
+  it('registers every card in the bundle with the card picker', () => {
+    expect(customElements.get('meshtastic-radio-card')).toBeDefined();
+    expect(window.customCards?.map((c) => c.type)).toEqual(['meshtastic-chat-card', 'meshtastic-radio-card']);
+  });
+
   it('renders the channel friendly_name as the header title', async () => {
     const conn = makeConnection();
     const hass = makeHass(conn);

@@ -1,22 +1,31 @@
-# Meshtastic Chat Card
+# Meshtastic Cards
 
-A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home Assistant](https://www.home-assistant.io/) that displays Meshtastic channel messages recorded by the [`meshtastic` integration](https://github.com/meshtastic/home-assistant).
+Custom [Lovelace](https://www.home-assistant.io/dashboards/) cards for [Home Assistant](https://www.home-assistant.io/) that work with the [`meshtastic` integration](https://github.com/meshtastic/home-assistant). One install gives you:
+
+- **Meshtastic Chat** (`custom:meshtastic-chat-card`): channel messages, with history, live updates and optional sending.
+- **Meshtastic Radio** (`custom:meshtastic-radio-card`): everything the integration knows about your gateway radio, including battery, airtime, LoRa config, mesh and traffic stats, sensors and position.
+
+Both cards share the same look: a compact header, grouped rows, and a brief flash when something changes live.
 
 ## Screenshots
 
+**Chat**
+
 ![meshtastic-chat-card](.github/images/screenshot.png)
 
-## Features
+**Radio** (light and dark theme)
 
-- **History backfill** – on load, pulls up to 7 days of past messages from the HA logbook (`logbook/get_events`).
-- **Send messages** – optional opt-in composer that sends to the configured channel via the integration's `meshtastic.broadcast_channel_message` service. Sent messages appear in the log as **You** once the integration reports them (it fires `meshtastic_message_log` with `direction: "out"` and writes a logbook entry), so they also persist across reloads and show on every dashboard.
+<p>
+  <img src=".github/images/radio-card-light.png" alt="meshtastic-radio-card, light theme" width="360" />
+  <img src=".github/images/radio-card-dark.png" alt="meshtastic-radio-card, dark theme" width="360" />
+</p>
 
 ## Installation
 
 ### Prerequisites
 
 > [!WARNING]
-> Before using this card, please ensure you have the [Meshtastic integration](https://github.com/meshtastic/home-assistant) installed in your Home Assistant instance, with at least one gateway device exposing a channel entity (`device_class: channel`).
+> Before using these cards, please ensure you have the [Meshtastic integration](https://github.com/meshtastic/home-assistant) installed in your Home Assistant instance, with at least one connected gateway. The chat card needs a channel entity (`device_class: channel`); the radio card needs the gateway entity (`device_class: gateway`).
 
 ### HACS (Recommended)
 
@@ -26,6 +35,8 @@ A custom [Lovelace](https://www.home-assistant.io/dashboards/) card for [Home As
    - `https://github.com/ch0ppy35/meshtastic-integration-cards`
 4. Click "Install"
 5. Reload your browser
+
+Both cards ship in a single file (`meshtastic-chat-card.js`), so there is only one resource to install.
 
 ### Manual Installation
 
@@ -42,9 +53,12 @@ lovelace:
 
 1. Reload your browser.
 
-## Usage
+## Chat card
 
-Add the card to your dashboard using the UI editor or YAML:
+### Features
+
+- **History backfill**: on load, pulls up to 7 days of past messages from the HA logbook (`logbook/get_events`).
+- **Send messages**: an optional, opt-in composer sends to the configured channel through the integration's `meshtastic.broadcast_channel_message` service. Sent messages appear in the log as **You** once the integration reports them: it fires `meshtastic_message_log` with `direction: "out"` and writes a logbook entry. That means sent messages also persist across reloads and show on every dashboard.
 
 ### Card Editor
 
@@ -107,6 +121,66 @@ If you're unsure which channel entity to use, here are a couple of ways to find 
 2. Filter for `meshtastic.` and look for entities with `device_class: channel`
 3. Use the entity ID (e.g. `meshtastic.my_gateway_channel_primary`)
 
+## Radio card
+
+### What it shows
+
+The card starts from the gateway entity, finds its device, and reads the sensors that the integration attaches to that device. Values update live, and a row flashes briefly when its value changes. Sections or rows with no data are hidden.
+
+| Section      | Rows                                                                                                                                    |
+| :----------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| **Header**   | Device name, then short name · hardware model · firmware version (plus `Disconnected` if the gateway is offline)                        |
+| **Device**   | Battery (and whether it is powered), voltage, uptime, node ID, role, rebroadcast mode, Bluetooth, Wi-Fi                                 |
+| **Radio**    | Channel utilization, TX airtime, region, modem preset (or custom bandwidth/SF/CR), TX power, transmit on/off, hop limit, frequency slot |
+| **Mesh**     | Nodes online / total                                                                                                                    |
+| **Traffic**  | Packets sent, received, relayed, relay canceled, duplicates, malformed                                                                  |
+| **Sensors**  | Any environment, air quality or power telemetry the radio reports (temperature, humidity, pressure, PM2.5, …)                           |
+| **Position** | Location, altitude and satellites from the node's device tracker; GPS mode; fixed position                                              |
+| **Modules**  | Which modules are enabled (MQTT, Store & Forward, Range Test, Neighbor Info, …)                                                         |
+
+> [!NOTE]
+> The gateway entity's attributes also hold sensitive config such as the Wi-Fi PSK, MQTT password and private keys. The card only reads a fixed allowlist of safe fields, so **secrets are never displayed**. Set `show_config: false` to hide config rows entirely and show only live telemetry.
+
+### Card Editor
+
+Add **Meshtastic Radio** from the card picker. The editor pre-selects your gateway entity and lets you set the title, choose sections, and toggle config rows.
+
+### YAML
+
+```yaml
+type: custom:meshtastic-radio-card
+gateway_entity: meshtastic.gateway_base
+```
+
+### Configuration options
+
+| Option           | Type      | Default      | Description                                                                                                         |
+| :--------------- | :-------- | :----------- | :------------------------------------------------------------------------------------------------------------------ |
+| `gateway_entity` | `string`  | —            | **Required.** Entity ID of the Meshtastic gateway (`device_class: gateway`).                                        |
+| `title`          | `string`  | —            | Card title. Defaults to the gateway device's name.                                                                  |
+| `sections`       | `list`    | all sections | Which sections to show: `device`, `radio`, `mesh`, `traffic`, `environment`, `position`, `modules`. Order is fixed. |
+| `show_config`    | `boolean` | `true`       | Show the radio config rows (role, region, modem preset, TX power, modules, …). `false` shows only sensor data.      |
+
+### Full YAML example
+
+```yaml
+type: custom:meshtastic-radio-card
+gateway_entity: meshtastic.gateway_base
+title: 'Roof Radio'
+sections:
+  - device
+  - radio
+  - mesh
+  - traffic
+show_config: true
+```
+
+### Finding Your Gateway Entity
+
+Go to **Developer Tools** → **States**, filter for `meshtastic.gateway_`, and use that entity ID. The card editor also pre-selects it for you.
+
+The card matches sensors by the entity IDs the integration creates (for example `sensor.meshtastic_base_1234_device_battery_level`). If you rename those entity IDs, the matching rows disappear from the card. Renaming _friendly names_ is fine.
+
 ## Development
 
 ```bash
@@ -116,17 +190,19 @@ yarn install
 # Start the dev rollup (rebuild on save, serves the bundle on :5001)
 yarn start
 
-# Production build → dist/meshtastic-chat-card.js
+# Production build → dist/meshtastic-chat-card.js (both cards)
 yarn build
 
-# Type-check (uses tsconfig.test.json so test files are included)
+# Type-check src/ and demo/
 yarn typecheck
 
 # Lint
 yarn lint
 ```
 
-The dev build registers the card as `meshtastic-chat-card-dev` so it can coexist with the production card in the same HA instance. The `DEV` flag is injected at build time by `@rollup/plugin-replace` (`true` in `rollup.config.dev.js`, `false` in `rollup.config.js`) — no manual flipping required before cutting a release.
+The dev build registers the cards as `meshtastic-chat-card-dev` and `meshtastic-radio-card-dev` so they can coexist with the production cards in the same HA instance. The `DEV` flag is injected at build time by `@rollup/plugin-replace` (`true` in `rollup.config.dev.js`, `false` in `rollup.config.js`), so there's nothing to flip by hand before cutting a release.
+
+Source layout: `src/index.ts` is the bundle entry and imports each card. `src/register.ts` holds the shared card-picker registration. Each card is a thin Lit element (`chat-card.ts`, `radio-card.ts`) over pure, unit-tested helpers (`history.ts`, `live.ts`, `messages.ts`, `discovery.ts`, `radio.ts`). Shared styles live in `styles.ts`.
 
 ### Where the dev bundle is written
 
@@ -147,28 +223,33 @@ harness:
 yarn demo
 ```
 
-This bundles the card plus a small preview page and serves it on
-<http://localhost:5050>. The page mounts the card against a stubbed `hass`
-object backed by mock logbook history, and exposes a controls panel for the
-config options that matter most while developing:
+This bundles the cards plus a small preview page and serves it on
+<http://localhost:5050>. The page mounts both cards against a stubbed `hass`
+object backed by mock logbook history and a fake gateway device. It also
+exposes a controls panel:
 
-- `title`, `limit`, `sort_order`, `show_timestamps`, `enable_send`
+- Chat: `title`, `limit`, `sort_order`, `show_timestamps`, `enable_send`
 - Container width / height (HA's grid sizing doesn't apply on a vanilla page)
 - An **Inject message** button that fires a fake `meshtastic_message_log`
   event so you can see the live-flash animation
 - A **Replay history** button that rebuilds the mock logbook
+- Radio: `show_config`, a **gateway connected** toggle, and a **Randomize
+  telemetry** button that pushes new sensor states through `hass` so changed
+  rows flash
 
 Send a message with `enable_send` on and the harness reports it back through
-the live event stream as an outbound message and logs the `callService` payload to the browser
-console — useful for verifying the full round-trip without a radio.
+the live event stream as an outbound message. It also logs the `callService`
+payload to the browser console, so you can check the full round-trip without a
+radio.
 
-The harness lives in `demo/` and uses the same dev tag
-(`meshtastic-chat-card-dev`) as `yarn start`, so it shares the dev build flag
-behavior described above.
+The fake gateway includes secret config attributes on purpose, so the demo
+also shows that they never render.
+
+The screenshots in this README are taken from the demo page.
 
 ### Testing the live message path without a radio
 
-The card subscribes to the `meshtastic_message_log` event bus. To exercise the live render path without a real Meshtastic gateway, fire a fake event from HA's **Developer Tools → Events**:
+The chat card subscribes to the `meshtastic_message_log` event bus. To exercise the live render path without a real Meshtastic gateway, fire a fake event from HA's **Developer Tools → Events**:
 
 - Event type: `meshtastic_message_log`
 - Event data:
@@ -193,4 +274,4 @@ yarn test:watch
 yarn test:coverage
 ```
 
-Tests live next to the source under `src/__tests__/` and use Jest with `ts-jest` (ESM mode). Pure helpers (`messages.ts`, `history.ts`, `discovery.ts`, `live.ts`) run in the default `node` environment; the Lit render smoke test opts into `jsdom` via a per-file docblock.
+Tests live under `src/__tests__/` and run on [Vitest](https://vitest.dev/) with `jsdom`. Pure helpers are tested directly. The Lit render tests (`render.test.ts`, `radio-render.test.ts`) mount the real elements against a stubbed `hass`. `src/__tests__/fixtures/radio.ts` models a gateway device the way the integration exposes it, secret attributes included.

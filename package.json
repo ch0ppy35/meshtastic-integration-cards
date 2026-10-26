@@ -1,6 +1,6 @@
 {
   "name": "meshtastic-chat-card",
-  "description": "Lovelace card that displays Meshtastic channel messages recorded by the meshtastic Home Assistant integration.",
+  "description": "Lovelace cards for the meshtastic Home Assistant integration: channel chat and gateway radio status.",
   "repository": "https://github.com/ch0ppy35/meshtastic-integration-cards",
   "author": "Mike Miller",
   "version": "1.2.0",
@@ -13,7 +13,8 @@
     "lovelace",
     "custom-cards",
     "meshtastic",
-    "chat"
+    "chat",
+    "radio"
   ],
   "license": "MIT",
   "type": "module",
