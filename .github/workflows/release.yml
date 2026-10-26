@@ -3,13 +3,13 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - 'v*.*.*'
 
 permissions:
   contents: write
 
 env:
-  NODE_VERSION: "26.x"
+  NODE_VERSION: '26.x'
 
 jobs:
   release:

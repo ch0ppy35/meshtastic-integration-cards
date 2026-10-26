@@ -89,3 +89,26 @@ export interface MeshtasticChannelStateAttrs {
   primary?: boolean;
   secondary?: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// Radio card
+// ---------------------------------------------------------------------------
+
+export const RADIO_SECTIONS = ['device', 'radio', 'mesh', 'traffic', 'environment', 'position', 'modules'] as const;
+export type RadioSectionId = (typeof RADIO_SECTIONS)[number];
+
+export interface RadioCardConfig {
+  type?: string;
+  title?: string;
+  // The gateway entity (`meshtastic.gateway_*`, device_class `gateway`).
+  gateway_entity: string;
+  // Sections to show, in the card's fixed order. Defaults to all.
+  sections?: RadioSectionId[];
+  // Show the allowlisted radio config read from the gateway entity.
+  show_config?: boolean;
+}
+
+export interface MeshtasticGatewayStateAttrs {
+  device_class?: string;
+  friendly_name?: string;
+}
